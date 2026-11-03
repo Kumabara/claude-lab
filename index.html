@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>關於我</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* 海洋色階：水面 → 深海 */
+      --sea-surface: #bff3ff;
+      --sea-shallow: #3ec5e6;
+      --sea-mid: #0f6fa8;
+      --sea-deep: #06294f;
+      --sea-abyss: #020c1f;
+
+      --card-bg: rgba(255, 255, 255, 0.72);
+      --card-border: rgba(255, 255, 255, 0.75);
+      --panel-bg: rgba(255, 255, 255, 0.55);
+      --text: #0b2440;
+      --muted: #4a6580;
+      --accent: #0a7fb5;
+      --accent-soft: rgba(10, 127, 181, 0.10);
+      --shadow: 0 30px 80px rgba(2, 20, 50, 0.45), 0 2px 0 rgba(255, 255, 255, 0.6) inset;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { background: var(--sea-abyss); }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 16px;
+      font-family: "Noto Sans TC", system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      position: relative;
+      /* 仰望水面：頂端最亮，往下漸深 */
+      background:
+        radial-gradient(ellipse 90% 45% at 50% -8%, rgba(255, 255, 255, 0.95) 0%, rgba(191, 243, 255, 0.7) 25%, transparent 60%),
+        linear-gradient(180deg,
+          var(--sea-surface) 0%,
+          var(--sea-shallow) 14%,
+          var(--sea-mid) 40%,
+          var(--sea-deep) 72%,
+          var(--sea-abyss) 100%);
+      background-attachment: fixed;
+    }
+
+    /* ---------- 海洋背景層 ---------- */
+    .ocean {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    /* 水面波紋（焦散光） */
+    .ocean::before {
+      content: "";
+      position: absolute;
+      left: -10%;
+      right: -10%;
+      top: -4%;
+      height: 26%;
+      background:
+        radial-gradient(ellipse 12% 30% at 12% 40%, rgba(255,255,255,0.55), transparent 70%),
+        radial-gradient(ellipse 10% 25% at 30% 60%, rgba(255,255,255,0.45), transparent 70%),
+        radial-gradient(ellipse 14% 28% at 52% 35%, rgba(255,255,255,0.6), transparent 70%),
+        radial-gradient(ellipse 9% 22% at 70% 62%, rgba(255,255,255,0.45), transparent 70%),
+        radial-gradient(ellipse 13% 30% at 88% 42%, rgba(255,255,255,0.5), transparent 70%);
+      filter: blur(6px);
+      mix-blend-mode: screen;
+      animation: ripple 9s ease-in-out infinite alternate;
+    }
+
+    /* 深處暗角 */
+    .ocean::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 120% 80% at 50% 0%, transparent 45%, rgba(1, 8, 22, 0.55) 100%);
+    }
+
+    @keyframes ripple {
+      0%   { transform: translateX(-2%) scaleY(1); opacity: 0.85; }
+      50%  { transform: translateX(1.5%) scaleY(1.08); opacity: 1; }
+      100% { transform: translateX(2.5%) scaleY(0.95); opacity: 0.8; }
+    }
+
+    /* 穿透水面的光束 */
+    .rays {
+      position: absolute;
+      top: -12%;
+      left: 50%;
+      width: 180vmax;
+      height: 140vh;
+      transform: translateX(-50%);
+      transform-origin: 50% 0;
+      background: repeating-conic-gradient(
+        from 155deg at 50% 0%,
+        rgba(255, 255, 255, 0) 0deg,
+        rgba(255, 255, 255, 0.16) 2deg,
+        rgba(255, 255, 255, 0) 4.5deg,
+        rgba(255, 255, 255, 0) 7deg,
+        rgba(255, 255, 255, 0.09) 8.5deg,
+        rgba(255, 255, 255, 0) 11deg
+      );
+      -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,0.6) 45%, transparent 85%);
+              mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,0.6) 45%, transparent 85%);
+      mix-blend-mode: soft-light;
+      filter: blur(3px);
+      animation: sway 14s ease-in-out infinite alternate;
+    }
+
+    .rays.alt {
+      opacity: 0.7;
+      mix-blend-mode: screen;
+      background: repeating-conic-gradient(
+        from 160deg at 46% 0%,
+        rgba(200, 245, 255, 0) 0deg,
+        rgba(200, 245, 255, 0.10) 1.5deg,
+        rgba(200, 245, 255, 0) 3.5deg,
+        rgba(200, 245, 255, 0) 9deg
+      );
+      animation-duration: 19s;
+      animation-direction: alternate-reverse;
+    }
+
+    @keyframes sway {
+      0%   { transform: translateX(-50%) rotate(-3deg); }
+      100% { transform: translateX(-50%) rotate(3deg); }
+    }
+
+    /* 上升的氣泡 */
+    .bubble {
+      position: absolute;
+      bottom: -40px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 30%, rgba(255,255,255,0.9) 0 12%, rgba(255,255,255,0.15) 35%, rgba(255,255,255,0.05) 70%);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      animation: rise linear infinite;
+      opacity: 0;
+    }
+    .bubble:nth-child(3) { left: 8%;  width: 10px; height: 10px; animation-duration: 13s; animation-delay: 0s; }
+    .bubble:nth-child(4) { left: 18%; width: 6px;  height: 6px;  animation-duration: 10s; animation-delay: 3s; }
+    .bubble:nth-child(5) { left: 33%; width: 14px; height: 14px; animation-duration: 16s; animation-delay: 6s; }
+    .bubble:nth-child(6) { left: 64%; width: 8px;  height: 8px;  animation-duration: 12s; animation-delay: 1.5s; }
+    .bubble:nth-child(7) { left: 78%; width: 12px; height: 12px; animation-duration: 15s; animation-delay: 4.5s; }
+    .bubble:nth-child(8) { left: 90%; width: 5px;  height: 5px;  animation-duration: 9s;  animation-delay: 7s; }
+
+    @keyframes rise {
+      0%   { transform: translate(0, 0); opacity: 0; }
+      10%  { opacity: 0.9; }
+      50%  { transform: translate(14px, -55vh); }
+      90%  { opacity: 0.6; }
+      100% { transform: translate(-8px, -110vh); opacity: 0; }
+    }
+
+    /* ---------- 卡片 ---------- */
+    .card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      backdrop-filter: blur(22px) saturate(160%);
+      -webkit-backdrop-filter: blur(22px) saturate(160%);
+      border: 1px solid var(--card-border);
+      border-radius: 32px;
+      padding: 52px 32px 32px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      animation: float-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+
+    /* 卡片頂端的水光高光 */
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, transparent 32%);
+      pointer-events: none;
+    }
+
+    .card > * { position: relative; }
+
+    @keyframes float-in {
+      from { opacity: 0; transform: translateY(24px) scale(0.98); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .avatar {
+      width: 220px;
+      max-width: 80%;
+      margin: -12px auto 14px;
+      animation: bob 4s ease-in-out infinite;
+    }
+
+    .avatar svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      overflow: visible;
+      filter: drop-shadow(0 10px 18px rgba(6, 41, 79, 0.25));
+    }
+
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-5px); }
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: 0.04em;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    /* 每個區塊都是內層圓角小卡 */
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 32px 0 14px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.24em;
+      color: var(--accent);
+    }
+    .section-title::before,
+    .section-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(10, 127, 181, 0.35), transparent);
+    }
+
+    .interests {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .interests li {
+      padding: 14px 12px;
+      border-radius: 18px;
+      background: var(--panel-bg);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      color: var(--text);
+      font-weight: 500;
+      font-size: 1rem;
+      box-shadow: 0 4px 14px rgba(6, 41, 79, 0.08);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    }
+
+    .interests li:hover {
+      transform: translateY(-3px);
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 10px 24px rgba(6, 41, 79, 0.16);
+    }
+
+    blockquote {
+      position: relative;
+      padding: 26px 24px 22px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(126, 227, 255, 0.28), rgba(21, 149, 211, 0.14));
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      font-size: 1.15rem;
+      font-weight: 500;
+      line-height: 1.8;
+      letter-spacing: 0.05em;
+    }
+
+    blockquote::before {
+      content: "“";
+      position: absolute;
+      top: -6px;
+      left: 16px;
+      font-size: 3.4rem;
+      line-height: 1;
+      color: var(--accent);
+      opacity: 0.35;
+      font-family: Georgia, serif;
+    }
+
+    /* ---------- 深色模式 ---------- */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --card-bg: rgba(6, 28, 54, 0.62);
+        --card-border: rgba(160, 225, 255, 0.18);
+        --panel-bg: rgba(130, 210, 255, 0.08);
+        --text: #e8f7ff;
+        --muted: #9cc3dc;
+        --accent: #7fdcff;
+        --shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.12) inset;
+      }
+      .card::before { background: linear-gradient(180deg, rgba(160, 230, 255, 0.12) 0%, transparent 30%); }
+      .avatar svg { filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.45)); }
+      .interests li { border-color: rgba(160, 225, 255, 0.14); box-shadow: none; }
+      .interests li:hover { background: rgba(130, 210, 255, 0.16); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35); }
+      blockquote { border-color: rgba(160, 225, 255, 0.14); background: linear-gradient(135deg, rgba(126, 227, 255, 0.12), rgba(21, 149, 211, 0.06)); }
+      .section-title::before,
+      .section-title::after { background: linear-gradient(90deg, transparent, rgba(127, 220, 255, 0.35), transparent); }
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 44px 20px 24px; border-radius: 28px; }
+      h1 { font-size: 1.9rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ocean::before, .rays, .bubble, .card, .avatar { animation: none; }
+      .bubble { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ocean" aria-hidden="true">
+    <div class="rays"></div>
+    <div class="rays alt"></div>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+    <span class="bubble"></span>
+  </div>
+
+  <main class="card">
+    <div class="avatar">
+      <svg viewBox="0 0 240 160" role="img" aria-label="戴著面鏡、背著氣瓶趴著的卡皮巴拉">
+        <defs>
+          <clipPath id="capy-body">
+            <path d="M70 92 C72 62 110 50 150 52 C190 54 214 72 214 104 C214 126 200 136 180 136 L92 136 C74 136 68 118 70 92 Z"/>
+          </clipPath>
+        </defs>
+        <g stroke="#3b2416" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+          <!-- 地面陰影 -->
+          <ellipse cx="124" cy="140" rx="98" ry="8" fill="rgba(0,40,80,0.18)" stroke="none"/>
+
+          <!-- 後腳 -->
+          <ellipse cx="192" cy="134" rx="17" ry="7" fill="#8f5f3a"/>
+
+          <!-- 身體 -->
+          <path d="M70 92 C72 62 110 50 150 52 C190 54 214 72 214 104 C214 126 200 136 180 136 L92 136 C74 136 68 118 70 92 Z" fill="#b07a4f"/>
+          <!-- 毛的筆觸 -->
+          <path d="M176 70 l6 -4 M190 80 l6 -3 M168 110 l7 -2 M196 112 l6 -1" fill="none" stroke-width="2.5" opacity="0.55"/>
+
+          <!-- 浮力背心 -->
+          <g clip-path="url(#capy-body)">
+            <rect x="124" y="40" width="34" height="110" fill="#1b8fb8"/>
+            <rect x="124" y="98" width="34" height="9" fill="#0d5d7c" stroke-width="2.5"/>
+          </g>
+          <path d="M124 56 L124 136 M158 53 L158 136" fill="none" stroke-width="3"/>
+          <rect x="135" y="96" width="12" height="13" rx="2.5" fill="#cfd8df" stroke-width="2.5"/>
+
+          <!-- 氣瓶 -->
+          <rect x="112" y="30" width="82" height="26" rx="13" fill="#ffc53d"/>
+          <path d="M122 38 L182 38" fill="none" stroke="#fff3c4" stroke-width="4" opacity="0.9"/>
+          <rect x="134" y="28" width="12" height="30" rx="3" fill="#1b8fb8"/>
+          <rect x="101" y="37" width="13" height="13" rx="3" fill="#9aa7b4"/>
+          <circle cx="104" cy="30" r="6" fill="#e2463f"/>
+
+          <!-- 調節器軟管 -->
+          <path d="M101 46 C82 46 92 86 108 102 C118 114 112 132 92 138" fill="none" stroke="#25282f" stroke-width="6"/>
+          <rect x="80" y="132" width="16" height="11" rx="4" fill="#3c4250"/>
+
+          <!-- 頭 -->
+          <path d="M16 110 C14 92 22 78 44 74 C56 70 62 64 74 64 C94 64 108 78 108 100 C108 122 96 136 72 136 L32 136 C20 136 16 126 16 110 Z" fill="#c48a5a"/>
+          <!-- 耳朵 -->
+          <ellipse cx="96" cy="70" rx="8" ry="6.5" fill="#8f5f3a"/>
+
+          <!-- 前腳 -->
+          <ellipse cx="44" cy="138" rx="14" ry="6.5" fill="#8f5f3a"/>
+          <ellipse cx="80" cy="139" rx="12" ry="6" fill="#8f5f3a"/>
+
+          <!-- 臉 -->
+          <ellipse cx="25" cy="98" rx="3" ry="4" fill="#3b2416" stroke="none"/>
+          <path d="M60 92 Q67 96 74 92" fill="none" stroke-width="3.5"/>
+          <path d="M22 122 Q30 127 38 121" fill="none" stroke-width="3"/>
+          <ellipse cx="66" cy="111" rx="8" ry="4.5" fill="#ff8f8f" stroke="none" opacity="0.55"/>
+
+          <!-- 額頭上的面鏡 -->
+          <path d="M88 64 C100 60 108 68 106 80" fill="none" stroke="#25282f" stroke-width="6"/>
+          <g transform="rotate(-10 68 62)">
+            <rect x="46" y="50" width="44" height="23" rx="10" fill="#25282f"/>
+            <rect x="51" y="54.5" width="34" height="14" rx="6" fill="#a8ecff" stroke-width="2.5"/>
+            <path d="M56 65 L64 57 M62 66 L69 59" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.85"/>
+          </g>
+
+          <!-- 小氣泡 -->
+          <circle cx="10" cy="80" r="5" fill="rgba(255,255,255,0.55)" stroke="#ffffff" stroke-width="2"/>
+          <circle cx="4" cy="62" r="3.5" fill="rgba(255,255,255,0.55)" stroke="#ffffff" stroke-width="2"/>
+          <circle cx="12" cy="46" r="2.5" fill="rgba(255,255,255,0.55)" stroke="#ffffff" stroke-width="2"/>
+        </g>
+      </svg>
+    </div>
+    <h1>熊</h1>
+    <p class="subtitle">很高興認識你 👋</p>
+
+    <h2 class="section-title">興趣</h2>
+    <ul class="interests">
+      <li>🤿 潛水</li>
+      <li>🏂 滑雪</li>
+      <li>📺 動漫</li>
+      <li>🍜 吃好吃的</li>
+    </ul>
+
+    <h2 class="section-title">我想說</h2>
+    <blockquote>好想躺平。</blockquote>
+  </main>
+</body>
+</html>
